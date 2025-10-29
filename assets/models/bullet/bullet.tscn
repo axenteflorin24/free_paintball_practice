@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3 uid="uid://citomo46hifn8"]
+
+[ext_resource type="Script" uid="uid://bbsfecqvhhvei" path="res://assets/models/bullet/bullet.gd" id="2_qnrny"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63i33"]
+albedo_color = Color(1, 0.45098, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_bk54n"]
+material = SubResource("StandardMaterial3D_63i33")
+radial_segments = 16
+rings = 8
+
+[sub_resource type="SphereMesh" id="SphereMesh_xdpyj"]
+radius = 0.8
+height = 1.6
+radial_segments = 16
+rings = 8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_a4s3u"]
+
+[node name="bullet" type="CharacterBody3D" unique_id=55622030]
+transform = Transform3D(-0.05, 0, 4.37114e-09, 0, 0.05, 0, -4.37114e-09, 0, -0.05, 0, 0, 0)
+script = ExtResource("2_qnrny")
+
+[node name="bullet_mesh" type="MeshInstance3D" parent="." unique_id=1177459039]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_bk54n")
+skeleton = NodePath("../..")
+
+[node name="bullet_friction" type="MeshInstance3D" parent="." unique_id=1953930136]
+transform = Transform3D(0.999962, 0, -0.00872654, 0, 1, 0, 0.00872654, 0, 0.999962, 0, 0, 0)
+transparency = 1.0
+cast_shadow = 0
+mesh = SubResource("SphereMesh_xdpyj")
+
+[node name="loading" type="Timer" parent="." unique_id=1839115920]
+wait_time = 0.05
+one_shot = true
+autostart = true
+
+[node name="lifetime" type="Timer" parent="." unique_id=509107961]
+wait_time = 1.3599999999999999
+one_shot = true
+
+[node name="collision" type="CollisionShape3D" parent="." unique_id=277226691]
+shape = SubResource("SphereShape3D_a4s3u")
+
+[connection signal="timeout" from="loading" to="." method="_on_loading_timeout"]
+[connection signal="timeout" from="lifetime" to="." method="_on_lifetime_timeout"]
