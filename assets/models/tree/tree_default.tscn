@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=4 uid="uid://ve0pr1ldso58"]
+
+[ext_resource type="Texture2D" uid="uid://vd2vewmdp8ux" path="res://assets/models/tree/tree_texture-mask.png" id="1_acr03"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lic5m"]
+resource_name = "Material.001"
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+shading_mode = 0
+albedo_texture = ExtResource("1_acr03")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6anf4"]
+_surfaces = [{
+"aabb": AABB(-1, -2.2291396, -1.0000015, 2, 4.4928737, 2.000003),
+"format": 34896613377,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"name": "Material.001",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AAADf/7/AAD//wN/AAAAAP//A3/+/wAAAAADfwAAAAB2XP7//v8AAHykAAAAAAAAfKQAAP7/AAB2XP//AAAAAIIyaRH//wAAJtVs3wAAAAAm1Wzf/v8AAIIyaREAAAAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_cd2xp"]
+resource_name = "tree_Plane"
+_surfaces = [{
+"aabb": AABB(-1, -2.2291396, -1.0000015, 2, 4.4928737, 2.000003),
+"attribute_data": PackedByteArray("AAD/////AAD/////AAAAAAAA/////wAA/////wAAAAAAAP////8AAP////8AAAAA"),
+"format": 34896613399,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"material": SubResource("StandardMaterial3D_lic5m"),
+"name": "Material.001",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AAADf/7//7///wN/AAD/v///A3/+//+/AAADfwAA/792XP7//v920nykAAAAAHbSfKQAAP7/dtJ2XP//AAB20oIyaRH//+HNJtVs3wAA4c0m1Wzf/v/hzYIyaREAAOHN////f////3////9/////f0muJFdJriRXSa4kV0muJFd52gnLedoJy3naCct52gnL")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_6anf4")
+
+[node name="tree_default" type="MeshInstance3D" unique_id=147369870]
+transform = Transform3D(0, 1, 2.273321e-07, 4.1860346e-07, 1.1920928e-07, -1.907, -2.341, 2.1316284e-14, -3.4099818e-07, 0, 0, 0)
+mesh = SubResource("ArrayMesh_cd2xp")
+skeleton = NodePath("")
