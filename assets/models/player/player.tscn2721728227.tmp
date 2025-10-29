@@ -1,0 +1,256 @@
+[gd_scene load_steps=4 format=3 uid="uid://cey3csnh5pmd8"]
+
+[ext_resource type="Script" uid="uid://cvso8myljaiv5" path="res://assets/models/bullet/test_gun.gd" id="1_eqqp1"]
+
+[sub_resource type="GDScript" id="GDScript_bxedw"]
+script/source = "extends CharacterBody3D
+
+
+@export var movement_speed = 5
+
+@export var jump_strength = 3.68
+@onready var ROOT = get_tree().root.get_children()[0]
+
+var mouse_sensitivity = 360
+var gamepad_sensitivity := 0.075
+
+var mouse_captured = true
+
+var movement_velocity: Vector3
+var rotation_target: Vector3
+
+var input_mouse: Vector2
+
+var health:int = 100
+var gravity := 0.0
+
+var previously_floored := false
+
+var jumps_remaining:int
+
+var container_offset = Vector3(1.2, -1.1, -2.75)
+
+var tween:Tween
+
+var zoom = false
+
+@onready var camera = $Head/Camera
+
+
+@export var crosshair:TextureRect
+
+# Functions
+
+func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	pass
+	
+
+
+func _process(delta):
+	
+	if Input.is_action_just_pressed(\"Mouse\"):
+		var pause = get_el(get_el(ROOT, 'HUD'), 'pause')
+		pause.visible == false
+		var logical = true
+			
+		if logical == true and mouse_captured == true:
+			
+			mouse_captured = false
+			
+			ROOT.paused = true
+			
+			logical = false
+			
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		
+		
+		if logical == true and mouse_captured == false:
+			
+			logical = false
+			
+			mouse_captured = true
+			
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			
+			ROOT.paused = true
+
+	if ROOT.paused == true:
+		return
+		
+	if Input.is_action_just_pressed(\"zoom\"):
+		var logical = true
+		if zoom == false and logical == true:
+
+			logical = false
+			zoom = true
+			$Head/Camera.set(\"fov\", 38)
+		
+		if zoom == true and logical == true:
+			logical = false
+			zoom = false
+			$Head/Camera.set(\"fov\",80)
+	
+	
+	
+	
+	# Handle functions
+	
+	handle_controls(delta)
+	handle_gravity(delta)
+	
+	# Movement
+	
+	var applied_velocity: Vector3
+	
+	movement_velocity = transform.basis * movement_velocity # Move forward
+	
+	applied_velocity = velocity.lerp(movement_velocity, delta * 10)
+	applied_velocity.y = -gravity
+	
+	velocity = applied_velocity
+	move_and_slide()
+	
+	
+	
+	# Movement sound
+	
+	
+	
+	if is_on_floor():
+		pass
+	
+	# Landing after jump or falling
+	
+	camera.position.y = lerp(camera.position.y, 0.0, delta * 5)
+	
+	if is_on_floor() and gravity > 1 and !previously_floored: # Landed
+		
+		camera.position.y = -0.1
+	
+	previously_floored = is_on_floor()
+	
+	# Falling/respawning
+	
+	if position.y < -10:
+		get_tree().reload_current_scene()
+
+# Mouse movement
+
+func _input(event):
+	if ROOT.paused == true:
+		return
+	if event is InputEventMouseMotion and mouse_captured:
+		input_mouse = event.relative / mouse_sensitivity
+		handle_rotation(event.relative.x, event.relative.y, false)
+
+func handle_controls(delta):
+	
+
+	var input := Input.get_vector(\"move_left\", \"move_right\", \"move_forward\", \"move_back\")
+	movement_velocity = Vector3(input.x, 0, input.y).normalized()*5.0
+
+	
+	if Input.is_action_just_pressed(\"jump\"):
+
+			action_jump()
+		
+	# Weapon switching
+	
+
+
+# Camera rotation
+func handle_rotation(xRot: float, yRot: float, isController: bool, delta: float = 0.0):
+	if isController:
+		
+		rotation_target -= Vector3(-yRot, -xRot, 0).limit_length(1.0) * gamepad_sensitivity
+		
+		rotation_target.x = clamp(rotation_target.x, deg_to_rad(-90), deg_to_rad(90))
+		
+		camera.rotation.x = lerp_angle(camera.rotation.x, rotation_target.x, delta * 25)
+		
+		rotation.y = lerp_angle(rotation.y, rotation_target.y, delta * 25)
+	else:
+		
+		rotation_target += (Vector3(-yRot, -xRot, 0) / mouse_sensitivity)
+		
+		rotation_target.x = clamp(rotation_target.x, deg_to_rad(-90), deg_to_rad(90))
+		
+		camera.rotation.x = rotation_target.x;
+		
+		rotation.y = rotation_target.y;
+	
+# Handle gravity
+
+func handle_gravity(delta):
+	gravity += 20 * delta
+	
+	if gravity > 0 and is_on_floor():
+		
+		gravity = 0
+
+# Jumping
+
+func action_jump():	
+	
+	gravity = -jump_strength	
+	jumps_remaining -= 1
+func get_el(_node, _name):
+	
+	
+	var array = _node.get_children()
+	
+	var i = 0
+	var c = array.size()-1
+	while i<=c:
+		
+		if array[i].name == _name:
+			return array[i]
+		
+		
+		i=i+1
+
+	return null
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gdq8c"]
+radius = 0.3
+height = 1.78
+
+[node name="Player" type="CharacterBody3D" unique_id=496270455]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = SubResource("GDScript_bxedw")
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=85326885]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.41016865, 0)
+shape = SubResource("CapsuleShape3D_gdq8c")
+
+[node name="Head" type="Node3D" parent="." unique_id=603237906]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4354248, -0.28502655)
+
+[node name="Camera" type="Camera3D" parent="Head" unique_id=914945427]
+cull_mask = 1048573
+current = true
+fov = 80.0
+
+[node name="Marker3D" type="Marker3D" parent="Head/Camera" unique_id=476503644]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
+script = ExtResource("1_eqqp1")
+
+[node name="RayCast3D_A" type="RayCast3D" parent="Head/Camera/Marker3D" unique_id=2138827759]
+target_position = Vector3(0, 0, 8000)
+
+[node name="RayCast3D_B" type="RayCast3D" parent="Head/Camera/Marker3D" unique_id=324574235]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.111442566, 0, 0)
+target_position = Vector3(0, 0, 8000)
+
+[node name="RayCast3D_C" type="RayCast3D" parent="Head/Camera/Marker3D" unique_id=1206520184]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.119132996, 0, 0)
+target_position = Vector3(0, 0, 8000)
+
+[node name="RayCast3D_D" type="RayCast3D" parent="Head/Camera/Marker3D" unique_id=710675954]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.223732, 0, 2.9802322e-08)
+target_position = Vector3(0, 0, 8000)
+
+[node name="Cooldown" type="Timer" parent="." unique_id=338517644]
+one_shot = true
