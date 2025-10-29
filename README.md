@@ -1,4 +1,4 @@
-<h3>Free Pintball Practice</h3>
+<h3>Free Paintball Practice</h3>
 
 Godot Engine Version >= 4.6.x
 
